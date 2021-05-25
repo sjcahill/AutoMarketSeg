@@ -116,7 +116,7 @@ def process_s1501(df, process_dict):
         DataFrame: processed dataframe
     """
     
-    f = parse_geo_id(df)
+    df = parse_geo_id(df)
     df = df[process_dict['columns']]
     df = df.rename(columns = process_dict['column_names'])
     df.iloc[:,:-4] = df.iloc[:,:-4].apply(pd.to_numeric)

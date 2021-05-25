@@ -4,14 +4,14 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pandas = "*"
-sklearn = "*"
+numpy = "*"
+scikit-learn = "*"
 pyod = "*"
-requests = "*"
 geopandas = "*"
+pandas = "*"
+requests = "*"
 
 [dev-packages]
-ipykernel = "*"
 
 [requires]
 python_version = "3.8"

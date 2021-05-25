@@ -9,6 +9,13 @@ from sklearn.cluster import KMeans
 from process import *
 from populate import get_tract_shapefile
 
+# For visualizations
+import matplotlib
+import geoviews as gv
+import hvplot.pandas
+gv.extension('matplotlib', 'bokeh')
+gv.output(backend='bokeh')
+
 def scale_data(df):
     """
     Uses the MinMaxScaler function from sklearn to scale all data to [0,1]
@@ -253,29 +260,39 @@ def generate_cluster_shapefile(States, proc_data_db, pop_threshold=400):
 
     for state in States:
 
-        with db.connect(proc_data_db) as conn:
-            data = db_to_df('ST' + state + '_' + 'combined_tables', conn)
-            data = make_model_ready(data, conn, pop_threshold, state)
-            scale_values = db_to_df('ST' + state + '_' + 'scale_values', conn)
-            pop = db_to_df('ST' + state + '_' + 'population', conn)
+        
+        data = db_to_df('ST' + state + '_' + 'combined_tables', proc_data_db)
+        data = make_model_ready(data, proc_data_db, pop_threshold, state)
+        scale_values = db_to_df('ST' + state + '_' + 'scale_values', proc_data_db)
+        pop = db_to_df('ST' + state + '_' + 'population', proc_data_db)
         
         data_s = scale_data(data)
 
         data_s = crude_outlier_detection(data_s, .7, state)
-        result = perform_cluster_analysis(data_s, .6)
+        result = perform_cluster_analysis(data_s, 6)
         result = result.reset_index().merge(pop, how='left').set_index(result.index.names)
         agg_table = cluster_aggregate_table(result, scale_values)
 
-        with db.connect(proc_data_db) as conn:
-            df_to_db(agg_table, conn, table_name = 'ST' + state + '_' + 'agg_table')
+        df_to_db(agg_table, proc_data_db, table_name = 'ST' + state + '_' + 'agg_table')
         
         gdf = get_tract_shapefile(state)
         gdf = parse_down_shapefile(gdf)
         result = gdf.merge(result, on='_fips')
 
-    return result
-    
     print(f'Successfully processed state {state}')
+
+    return result
+
+def generate_cmap(df):
+    num_clusters = len(df.cluster.unique())
+    cmap = matplotlib.colors.ListedColormap([matplotlib.cm.get_cmap("tab10").colors[i] for i in list(range(num_clusters))])
+    return cmap   
+    
+
+def generate_interactive_map(df):
+    
+    cmap = generate_cmap(df)    
+    return df.hvplot(c='cluster', cmap=cmap, line_width=0.1, alpha=0.7,  geo=True, tiles='CartoLight',  xaxis=False, yaxis=False, frame_height=900, frame_width=1200, colorbar=True)
 
 
 
