@@ -84,8 +84,9 @@ state and territory at once - it can probably be tweaked for a cleaner result:
 
 <h3> Final Notes </h3>
 
-An html file was generated featuring the results of an analysis. It used an underlying jupyter notebook located in the `automarketseg`
-directory.
+An html file was generated featuring the results of an analysis.
+
+ It used an underlying jupyter notebook located in the `automarketseg` directory called `florida_cluster_analysis.ipynb`.
 
 The pipenv generated `Pipfile` and `requirements.txt` are sufficient to do everything EXCEPT generate the map. For some reason
 `pipenv` was not playing nicely with the `geoviews` package.
@@ -94,5 +95,4 @@ Instead I used the a `conda` environment that solve the dependency conflicts for
 
 So, I have included the `environment.yml` for that in case you are interested.
 
-Finally, if you come across this and see some egregious programming/analytics errors/bad practices, feel free
-to let me know. I welcome any constructive criticism.
+Finally, any constructive criticism is welcome. 
