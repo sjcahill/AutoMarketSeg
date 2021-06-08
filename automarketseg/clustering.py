@@ -284,15 +284,35 @@ def generate_cluster_shapefile(States, proc_data_db, pop_threshold=400):
     return result
 
 def generate_cmap(df):
+    """
+    Takes a dataframe with a categorical variable as a column and generates a corresponding color map, 
+    with each category receiving a distinct color.
+
+    Args:
+        df (DataFrame): Dataframe with a column featuring categorical labels that need a color mapping
+
+    Returns:
+        cmap: A matplotlib color map object
+    """
     num_clusters = len(df.cluster.unique())
     cmap = matplotlib.colors.ListedColormap([matplotlib.cm.get_cmap("tab10").colors[i] for i in list(range(num_clusters))])
     return cmap   
     
 
-def generate_interactive_map(df):
+def generate_interactive_map(gdf):
+    """
+    Generates an interactive map that shows the geographic distribution of all of the clusters/
+
+    Args:
+        gdf (GeoDataFrame): A GeoDataFrame that contains the results of a clustering analysis
+
+    Returns:
+        plot: A map built using `geoviews` that provides some interactivity for looking at how clusters distribute
+        geographically.
+    """
     
-    cmap = generate_cmap(df)    
-    return df.hvplot(c='cluster', cmap=cmap, line_width=0.1, alpha=0.7,  geo=True, tiles='CartoLight',  xaxis=False, yaxis=False, frame_height=900, frame_width=1200, colorbar=True)
+    cmap = generate_cmap(gdf)    
+    return gdf.hvplot(c='cluster', cmap=cmap, line_width=0.1, alpha=0.7,  geo=True, tiles='CartoLight',  xaxis=False, yaxis=False, frame_height=900, frame_width=1200, colorbar=True)
 
 
 
